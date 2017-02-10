@@ -1,0 +1,5 @@
+#!/bin/sh
+pipe=$1;
+dir=$2;
+if test "$#" -lt 2; then echo "Usage: $0 <command pipe> <cmdlet dir>"; exit 1; fi;
+while read -r cmd arg < $pipe; do "$dir/$cmd" "$arg"; done;
