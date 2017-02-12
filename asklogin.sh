@@ -6,5 +6,6 @@ if test "$reply" == "$id"; then
 	export SHELL=$(cat /etc/realshell.d/$id) || exit $?;
 	exec $SHELL || exit $?;
 else
+	echo "Permission denied";
 	exit 1;
 fi
