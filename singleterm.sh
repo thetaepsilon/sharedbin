@@ -1,2 +1,2 @@
 #!/bin/sh
-exec st -f "Fira Mono" $@;
+exec st -f "xos4 Terminus" $@;
