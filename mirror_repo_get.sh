@@ -5,11 +5,10 @@ repo="$2";
 if test -z "${mirror}"; then echo "missing Rsync URL"; exit 1; fi
 if test -z "${repo}"; then echo "missing repository name"; exit 1; fi
 
-disablefsync="export LD_PRELOAD=/usr/local/lib/libeatmydata.so"
-
 arch="x86_64";
 component="${repo}/os/${arch}/";
 url="${mirror}${component}";
+echo "--- ${repo}: ${url}";
 local="./${component}";
 #temporary="$PWD/temp/${component}";
 mkdir -p "${local}" || exit 1;
