@@ -7,5 +7,5 @@ echo "--- Local directory: $store";
 echo "--- rsync prefix: $mirror";
 for repo in core extra community multilib; do {
 	echo "--- Syncing repo $repo";
-	mirror_repo_get.sh "${mirror}" "${repo}";
+	mirror_repo_get "${mirror}" "${repo}";
 }; done;
