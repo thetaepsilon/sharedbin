@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if test "$#" -lt 3; then echo "Usage: $(basename $0) <directory> <directories mode> <files mode>" >&2; exit 1; fi;
+
+dir="$1";
+dmode="$2";
+fmode="$3";
+find "$dir" -type d -exec chmod "$dmode" {} \;
+find "$dir" -type f -exec chmod "$fmode" {} \;
