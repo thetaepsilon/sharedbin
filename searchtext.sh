@@ -5,4 +5,4 @@ contentmatch="$2";
 namematch="$3";
 
 
-findregex.sh "$dir" "$namematch" | xargs --null -- grep -l "$contentmatch";
+find-files-regex.sh "$dir" "$namematch" | xargs --null -- grep -l "$contentmatch";
