@@ -1,2 +1,3 @@
 #!/bin/sh
-exec systemctl --full --no-legend list-units --all  | sed -e "s/ .*//g"
+if test -n "$1"; then mode="--user"; else mode="--system"; fi;
+exec systemctl $mode --full --no-legend list-units --all  | sed -e "s/ .*//g";
