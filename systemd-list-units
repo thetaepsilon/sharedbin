@@ -1,0 +1,2 @@
+#!/bin/sh
+exec systemctl --full --no-legend list-units --all  | sed -e "s/ .*//g"
