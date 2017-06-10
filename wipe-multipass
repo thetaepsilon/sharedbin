@@ -1,0 +1,24 @@
+#!/bin/sh
+if test $# -lt 3; then echo "Usage: $0 device blocksize pass_count"; exit 1; fi;
+device="$1";
+bs="$2";
+count="$3";
+echo "Device $device will be erased in $count (+ 1) passes using blocksize $bs.";
+echo "You have 10 seconds to abort the process.";
+sleep 10;
+echo "Starting erasure...";
+for i in $(seq -- "$count"); do {
+	echo "Starting random data pass, $i of $count";
+	cryptsetup open --type=plain --key-file=/dev/urandom "$device" wipe &&
+	{
+		dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of=/dev/mapper/wipe;
+		blockdev --flushbufs /dev/mapper/wipe;
+		blockdev --flushbufs "$device";
+		sleep 1;
+		cryptsetup close wipe;
+	};
+	echo "Pass $i complete.";
+}; done;
+echo "Starting zero-fill erase pass...";
+dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device";
+echo "Blank pass completed.";
