@@ -12,5 +12,5 @@ echo "--- ${repo}: ${url}";
 local="./${component}";
 #temporary="$PWD/temp/${component}";
 mkdir -p "${local}" || exit 1;
-${disablefsync};
+
 rsync -rtlH --delete-after --update --copy-links --safe-links --max-delete=1000 --delete-excluded --exclude='.*' "${url}" "${local}";
