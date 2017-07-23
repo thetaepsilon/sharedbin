@@ -13,4 +13,18 @@ local="./${component}";
 #temporary="$PWD/temp/${component}";
 mkdir -p "${local}" || exit 1;
 
-rsync --recursive --times --links --hard-links --delete-after --update --copy-links --safe-links --max-delete=1000 --delete-excluded --exclude='.*' "${url}" "${local}";
+rsync \
+	--recursive \
+	--times \
+	--links \
+	--hard-links \
+	--delete-after \
+	--update \
+	--copy-links \
+	--safe-links \
+	--max-delete=1000 \
+	--delete-excluded \
+	--exclude='.*' \
+	"${url}" \
+	"${local}" \
+	;
