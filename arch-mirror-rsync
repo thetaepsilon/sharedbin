@@ -1,0 +1,24 @@
+#!/bin/sh
+
+extraopts="";
+# note shellcheck warns about the use of unassigned env vars that aren't all uppercase.
+# if the env vars are all caps it assumes they're set in the startup env.
+if test -n "$ARCH_MIRROR_VERBOSE"; then {
+	extraopts="$extraopts --verbose";
+}; fi;
+if test -n "$ARCH_MIRROR_LIMITDELETE"; then {
+	extraopts="$extraopts --max-delete=1000";
+}; fi;
+
+exec rsync \
+	--recursive \
+	--times \
+	--links \
+	--hard-links \
+	--delete-after \
+	--update \
+	--copy-links \
+	--safe-links \
+	--exclude='.*' \
+	$extraopts \
+	"$@";
