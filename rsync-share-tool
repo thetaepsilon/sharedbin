@@ -52,6 +52,7 @@ while test $# -gt 0; do {
 		wrconfig "[$sharename]";
 		wrconfig "path = $path";
 		wrconfig "use chroot = false";
+		wrconfig "read only = true";
 		# yeah, I know. Use a more modern locale damnit
 		wrconfig "charset = UTF-8";
 		wrconfig "lock file = %RSYNC_RUNTIME_DIR%/lock.$sharename"
