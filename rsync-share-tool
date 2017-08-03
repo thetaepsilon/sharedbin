@@ -1,0 +1,75 @@
+#!/bin/sh
+
+name="$0";
+die() {
+	echo "# [fatal] $name: $1" >&2;
+	exit 2;
+}
+testdebug() {
+	test -n "$RSYNC_SHARE_VERBOSE";
+}
+debug() {
+	if testdebug; then echo "# [debug] $1" >&2; fi;
+}
+warn() {
+	echo "# [warning] $name: $1" >&2;
+}
+
+usage() {
+	echo "# Usage: $0 portnum path sharename [path sharename path sharename...]" >&2;
+}
+if test $# -lt 3; then usage; exit 1; fi;
+
+portnum="$1";
+shift;
+
+# try to get a tmpdir to work in for lockfiles
+rundir=$(mktemp -d) || die "Could not create runtime directory";
+debug "runtime directory: $rundir";
+# immediately register cleanup on exit
+trap 'rm -rf $rundir' EXIT;
+
+conffile="$rundir/rsyncd.conf";
+exec 3>"$conffile" || die "Could not open output configuration file";
+wrconfig() {
+	if testdebug; then echo "$1"; fi;
+	echo "$1" >&3 || die "config write failed";
+}
+
+export RSYNC_RUNTIME_DIR="$rundir";
+wrconfig "pid file = %RSYNC_RUNTIME_DIR%/pidfile";
+wrconfig "";
+
+# for each *complete* path-sharename pair, output a section
+while test $# -gt 0; do {
+	if test $# -lt 2; then {
+		warn "un-matched path-sharename pair, trailing arg is \"$1\"";
+		shift;
+	}; else {
+		path="$1";
+		sharename="$2";
+		shift 2;
+		wrconfig "[$sharename]";
+		wrconfig "path = $path";
+		wrconfig "use chroot = false";
+		# yeah, I know. Use a more modern locale damnit
+		wrconfig "charset = UTF-8";
+		wrconfig "lock file = %RSYNC_RUNTIME_DIR%/lock.$sharename"
+	}; fi;
+}; done;
+
+# start the rsync daemon.
+# note not using exec to allow the cleanup handler to do it's thing.
+rsync --daemon --config="$conffile" --port="$portnum" --no-detach --verbose;
+err=$?;
+
+rsyncerror() {
+	case "$1" in
+	# rsync documents itself as returning 20 for CTRL-C.
+	20)	:;;
+	*)	warn "rsync daemon exited code $err";;
+	esac
+}
+if test "$err" -ne "0"; then rsyncerror "$err"; fi;
+
+
