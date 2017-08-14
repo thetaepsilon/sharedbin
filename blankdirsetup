@@ -1,0 +1,31 @@
+#!/bin/sh
+
+usage() {
+	echo "Usage: $0 basedir [entry]+" >&2;
+	exit 1;
+}
+if test $# -lt 2; then usage; fi;
+
+basedir="$1";
+shift;
+
+# oops, global variable usage?
+tryentry() {
+	entrydir="${basedir}/${entry}";
+	mode=$(cat "${entrydir}/${mode}") || return $?;
+	owner=$(cat "${entrydir}/${owner}") || return $?;
+	group=$(cat "${entrydir}/${group}") || return $?;
+	target=$(cat "${entrydir}/${target}") || return $?;
+	install --directory --owner="$owner" --group="$group" --mode="$mode" -- "$target";
+}
+
+result=0;
+for entry in "$@"; do {
+	tryentry "$entry" || {
+		e=$?;
+		echo "Warning: exit code $e creating entry $entry" >&2;
+		result=2;
+	};
+}; done;
+
+exit $result;
