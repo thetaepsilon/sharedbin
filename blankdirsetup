@@ -15,10 +15,10 @@ shift 2;
 # oops, global variable usage?
 tryentry() {
 	entrydir="${basedir}/${entry}";
-	mode=$(cat "${entrydir}/${mode}") || return $?;
-	owner=$(cat "${entrydir}/${owner}") || return $?;
-	group=$(cat "${entrydir}/${group}") || return $?;
-	target=$(cat "${entrydir}/${target}") || return $?;
+	mode=$(cat "${entrydir}/mode") || return $?;
+	owner=$(cat "${entrydir}/owner") || return $?;
+	group=$(cat "${entrydir}/group") || return $?;
+	target=$(cat "${entrydir}/target") || return $?;
 	install --directory --owner="$owner" --group="$group" --mode="$mode" -- "$target";
 }
 
