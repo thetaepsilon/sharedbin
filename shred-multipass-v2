@@ -16,6 +16,7 @@ mkwipedata() {
 runpass() {
 	input=$(mkwipedata) || return $?;
 	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" oflag=direct of="$device";
+	rm "$input" || echo "warning: can't clean up input data temp file" >&2;
 }
 
 
