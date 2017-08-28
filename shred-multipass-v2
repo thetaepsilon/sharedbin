@@ -1,0 +1,37 @@
+#!/bin/sh
+if test $# -lt 3; then echo "Usage: $0 device blocksize pass_count"; exit 1; fi;
+device="$1";
+bs="$2";
+count="$3";
+
+
+mkwipedata() {
+	# data to wipe only has to be random on a per-block basis.
+	# we're not trying to hide anything, but *destroy* old patterns
+	# (otherwise a zero wipe would be sufficient).
+	path=$(mktemp) || return $?;
+	dd if=/dev/urandom bs="$bs" count=1 iflag=fullblock of="$path" || return $?;
+	echo "$path";
+}
+runpass() {
+	input=$(mkwipedata) || return $?;
+	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" oflag=direct of="$device";
+}
+
+
+
+echo "Device $device will be erased in $count (+ 1) passes using blocksize $bs.";
+echo "You have 10 seconds to abort the process.";
+sleep 10;
+echo "Starting erasure...";
+for i in $(seq -- "$count"); do {
+	echo "Starting random data pass, $i of $count";
+	if runpass; then {
+		echo "pass $i complete.";
+	}; else {
+		echo "warning: error occured during pass $i" >&2;
+	}; fi;
+}; done;
+echo "Starting zero-fill erase pass...";
+dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device";
+echo "Blank pass completed.";
