@@ -1,0 +1,15 @@
+#!/bin/sh
+
+progname=$(basename "$0");
+if test $# -lt 1; then echo "Usage: $progname find-dir <find flags...>" >&2; exit 1; fi;
+location="$1"; shift;
+
+find "$location" -writable "$@" 2>/dev/null | (
+	while read -r entry; do {
+		if test "$(readlink $entry)" != "/dev/null"; then {
+			echo "$entry";
+		} else {
+			echo "#" "$entry" "omitted" >&2;
+		}; fi;
+	}; done;
+);
