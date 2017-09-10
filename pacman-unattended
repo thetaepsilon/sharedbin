@@ -1,5 +1,15 @@
 #!/bin/sh
 # defaults wrapper script so that pacman's output is journal friendly,
 # and to disable interactive prompting.
+# also prints a distinct line after pacman's output so that end-of-execution can be spotted easier in the log.
 
-exec pacman --color=never --noconfirm --noprogressbar "$@";
+pacman --color=never --noconfirm --noprogressbar "$@";
+e=$?;
+
+if test "$e" -eq 0; then {
+	echo "-- command completed successfully --" >&2;
+}; else {
+	echo "-- !! pacman exited with exit code $e !! --" >&2;
+}; fi;
+
+exit $e;
