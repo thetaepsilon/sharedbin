@@ -1,0 +1,5 @@
+#!/bin/sh
+# defaults wrapper script so that pacman's output is journal friendly,
+# and to disable interactive prompting.
+
+exec pacman --color=never --noconfirm --noprogressbar "$@";
