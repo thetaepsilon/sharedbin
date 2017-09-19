@@ -1,5 +1,6 @@
 #!/bin/sh
 # wrapper script for running sshd as a user-level service.
+# overrides certain config options to sane defaults for a user-mode ssh daemon.
 # nofork mode (-D) because you should be using something saner to supervise your processes now.
 # *cough* systemd *cough*
 # priv. separation is disabled because normal users can't do it, sans some kind of helper or setuid mechanism.
@@ -7,4 +8,11 @@
 # man page says DEBUGx... leaks information about the connection, so whack that.
 # also default to using keys relative to the user's .ssh directory.
 # key types specified are from the advice given at https://stribika.github.io/2015/01/04/secure-secure-shell.html
-exec ssh -D -o "LogLevel VERBOSE" -o "UsePrivilegeSeparation no" -o "HostKey .ssh/serverkey_rsa" -o "HostKey .ssh/serverkey_ed25519" "$@";
+
+exec ssh \
+	-D \
+	-o "LogLevel VERBOSE" \
+	-o "UsePrivilegeSeparation no" \
+	-o "HostKey .ssh/serverkey_rsa" \
+	-o "HostKey .ssh/serverkey_ed25519" \
+	"$@";
