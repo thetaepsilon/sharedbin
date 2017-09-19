@@ -1,0 +1,8 @@
+#!/bin/sh
+# wrapper script for running sshd as a user-level service.
+# nofork mode (-D) because you should be using something saner to supervise your processes now.
+# *cough* systemd *cough*
+# priv. separation is disabled because normal users can't do it, sans some kind of helper or setuid mechanism.
+# loglevel verbose used to give useful output from the service;
+# man page says DEBUGx... leaks information about the connection, so whack that.
+exec ssh -D -o "LogLevel VERBOSE" -o "UsePrivilegeSeparation no" "$@";
