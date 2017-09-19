@@ -5,4 +5,6 @@
 # priv. separation is disabled because normal users can't do it, sans some kind of helper or setuid mechanism.
 # loglevel verbose used to give useful output from the service;
 # man page says DEBUGx... leaks information about the connection, so whack that.
-exec ssh -D -o "LogLevel VERBOSE" -o "UsePrivilegeSeparation no" "$@";
+# also default to using keys relative to the user's .ssh directory.
+# key types specified are from the advice given at https://stribika.github.io/2015/01/04/secure-secure-shell.html
+exec ssh -D -o "LogLevel VERBOSE" -o "UsePrivilegeSeparation no" -o "HostKey .ssh/serverkey_rsa" -o "HostKey .ssh/serverkey_ed25519" "$@";
