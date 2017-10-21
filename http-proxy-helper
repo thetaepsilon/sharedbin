@@ -1,0 +1,10 @@
+#!/bin/sh
+# HTTP proxy helper using ncat for commands which support giving helpers two args, the hostname and port.
+# GIT_SSH_COMMAND for instance is not arg-expanded by git.
+# instead, this allows you to pass in the http proxy via the usual env var.
+if test -n "$http_proxy_only_ip6"; then {
+	addrmode="-6";
+}; else {
+	if test -n "$http_proxy_only_ip4"; then addrmode="-4"; fi;
+}; fi;
+exec ncat $addrmode --proxy="$http_proxy" -- "$1" "$2";
