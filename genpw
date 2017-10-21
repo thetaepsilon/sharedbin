@@ -1,0 +1,4 @@
+#!/bin/sh
+printf "\npassphrase:";
+dd if=/dev/urandom bs=8 count=1 2>/dev/null | od -An -tx1;
+echo;
