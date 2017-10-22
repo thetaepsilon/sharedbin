@@ -1,0 +1,3 @@
+#!/bin/sh
+# sshd user mode
+exec sshd -f "$HOME/.config/ssh/sshd_config" "$@";
