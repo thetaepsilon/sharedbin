@@ -1,0 +1,3 @@
+#!/bin/sh
+# sshd inet mode, useful with socat's EXEC option
+exec sshd -d -i "$@";
