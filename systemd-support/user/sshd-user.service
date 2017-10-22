@@ -1,0 +1,6 @@
+[Unit]
+Description=SSH daemon unprivileged
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/env sshdu
