@@ -1,3 +1,6 @@
 #!/bin/sh
 # sshd user mode
-exec $(which sshd) -f "$HOME/.config/ssh/sshd_config" "$@";
+exec \
+	$(which sshd) \
+	-f "$HOME/.config/ssh/sshd_config" \
+	"$@";
