@@ -1,0 +1,3 @@
+#!/bin/sh
+# sshd inet user mode
+exec sshdi -f "$HOME/.config/ssh/sshd_config" "$@";
