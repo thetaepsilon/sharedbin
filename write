@@ -1,0 +1,4 @@
+#!/bin/sh
+value="$1";
+path="$2";
+exec echo "$value" > "$path";
