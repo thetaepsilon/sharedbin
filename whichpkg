@@ -1,0 +1,4 @@
+#!/bin/sh
+name="$1";
+abspath=$(which "$name") || exit $?;
+exec pacman -Qo "$abspath";
