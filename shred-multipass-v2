@@ -4,13 +4,21 @@ device="$1";
 bs="$2";
 count="$3";
 
+common_extras="";
+if test -n "$SHRED_PROGRESS"; then {
+	common_extras="$common_extras status=progress";
+}; fi;
+
+if test -n "$common_extras"; then {
+	echo "# picked up common extra options: $common_extras" >&2;
+}; fi;
 
 mkwipedata() {
 	# data to wipe only has to be random on a per-block basis.
 	# we're not trying to hide anything, but *destroy* old patterns
 	# (otherwise a zero wipe would be sufficient).
 	path=$(mktemp) || return $?;
-	dd if=/dev/urandom bs="$bs" count=1 iflag=fullblock of="$path" || return $?;
+	dd if=/dev/urandom bs="$bs" count=1 iflag=fullblock of="$path" $common_extras || return $?;
 	echo "$path";
 }
 runpass() {
@@ -34,5 +42,5 @@ for i in $(seq -- "$count"); do {
 	}; fi;
 }; done;
 echo "Starting zero-fill erase pass...";
-dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device";
+dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device" $common_extras;
 echo "Blank pass completed.";
