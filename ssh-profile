@@ -17,4 +17,7 @@ else
 	proxy="ProxyCommand nc %h %p";
 fi
 
+# ssh uses the $SHELL env var to spawn external commands; make it something consistent
+export SHELL=/bin/sh;
 exec ssh -o "UserKnownHostsFile ${profiledir}/knownhosts" -o "IdentityFile ${profiledir}/privkey" -o "$proxy" "$@";
+
