@@ -14,7 +14,7 @@ profiledir="${confdir}/${profile}";
 if test -n "$SSH_PROXY_COMMAND"; then
 	proxy="ProxyCommand $SSH_PROXY_COMMAND %h %p";
 else
-	proxy="ProxyCommand nc %h %p";
+	proxy="";
 fi
 
 # ssh uses the $SHELL env var to spawn external commands; make it something consistent
