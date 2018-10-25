@@ -1,0 +1,94 @@
+#!/bin/sh
+
+
+getchar() {
+	dd status=none bs=1 count=1;
+};
+
+
+err() {
+	echo "#" "$@" >&2;
+}
+
+usage() {
+	err "Usage: $0 dir1 dir2";
+	err "	interactively move non-dotfiles in current directory to one of two destinations";
+}
+
+prompthelp() {
+	err "1 or 2 for directory choice, . or q to quit";
+}
+promptwat() {
+	echo;
+	err "I don't know what $1 does";
+	prompthelp;
+}
+promptaction() {
+	err "action for?" "$1";
+}
+IFS='
+';
+
+
+
+if test $# -lt 2; then {
+	usage;
+	exit 1;
+}; fi;
+
+ldir="${1%/}";
+rdir="${2%/}";
+err "directories: 1 is $ldir, 2 is $rdir"
+
+
+
+left() {
+	err "moving to 1st directory: $1 -> $ldir";
+	mv "$1" "${ldir}/";
+};
+right() {
+	err "moving to 2nd directory: $1 -> $rdir";
+	mv "$1" "${rdir}/";
+};
+quit() {
+	err "got quit key, exiting";
+};
+
+
+
+exec 3<&0;
+handle_one() {
+	read file || {
+		err "all reported files handled";
+		return 0;
+	};
+	if test "$file" == "$ldir"; then handle_one; fi;
+	if test "$file" == "$rdir"; then handle_one; fi;
+	promptaction "$file";
+	r=false;
+
+	while true; do {
+		c="$(getchar <&3)";
+		case "$c" in
+			1) left "$file"; r=true; break;;
+			2) right "$file"; r=true; break;;
+			.) quit; break;;
+			q) quit; break;;
+			*) promptwat "$c"; promptaction "$file";;
+		esac;
+	}; done;
+
+	if "$r"; then {
+		handle_one;
+	}; fi;
+};
+
+
+
+stty -icanon -echo min 1;
+prompthelp;
+ls -1 | handle_one;
+
+stty icanon echo;
+
+
