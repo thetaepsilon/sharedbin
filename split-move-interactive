@@ -58,7 +58,7 @@ quit() {
 
 exec 3<&0;
 handle_one() {
-	read file || {
+	read -r file || {
 		err "all reported files handled";
 		return 0;
 	};
