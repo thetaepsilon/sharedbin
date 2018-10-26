@@ -1,0 +1,77 @@
+#!/bin/sh
+
+
+
+log() {
+	echo "#" "$@";
+}
+err() {
+	echo "#" "$@" >&2;
+};
+fatal() {
+	err "$@";
+	err "abort!";
+	exit 1;
+};
+usage() {
+	fatal "Usage: $0 targetdir"
+};
+
+# OK fine shellcheck, I won't use "which"...
+_git="$(command -v git)" || exit $?;
+logcmd() {
+	log "cmd" "$@";
+};
+dogit() {
+	# could add git command tracing here if desired...
+	#logcmd "$_git" "$@";
+	"$_git" "$@";
+};
+
+check_exists() {
+	_t="$1";
+	if test ! -e "$_t"; then {
+		# doesn't exist yet, let's set it up
+		#log "target repository $_t doesn't exist yet, creating...";
+		# oh cool, git init can mkdir for us...
+		dogit init --bare "$_t" || fatal "git init failed in $_t";
+	}; fi;
+	# we don't test if it's a dir here, git should do that itself
+};
+
+
+
+if test $# -lt 1; then usage; fi;
+targetbase="$1";
+
+_tmp="$(mktemp)" || fatal "can't create temporary file for find-targets output";
+cleanup() {
+	rm "$_tmp" || err "warning: unable to clean up temporary file $_tmp";
+};
+trap cleanup EXIT;
+
+./find-targets >"$_tmp" || exit $?;
+
+(IFS='
+'; while read -r _srcrepo; do {
+	gitsrc="./${_srcrepo%/.git}";
+	# catch trailing slashes still, in case of bare repositories
+	gitsrc="${gitsrc%/}";
+	# target for pushes should usually be a bare repo.
+	targetrepo="${targetbase}/${gitsrc}.git";
+	log "$gitsrc -> $targetrepo";
+
+	check_exists "$targetrepo";	# terminates sub-shell if anything fails
+
+	# don't clobber our pwd from cd'ing into source directory
+	(
+		cd "$gitsrc" || exit $?;
+		dogit push "$targetrepo" '*:*' || fatal "git push died";
+	) || {
+		fatal "something went wrong handling $gitsrc";
+	};
+}; done) < "$_tmp" || fatal "repo list sub-shell returned error";
+
+log "all pushes completed"
+
+
