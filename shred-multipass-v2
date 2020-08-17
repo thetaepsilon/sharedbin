@@ -5,7 +5,11 @@ bs="$2";
 count="$3";
 
 common_extras="";
-if test "$SHRED_PROGRESS" -gt 0; then {
+
+# enable command line in-situ override, e.g. progress=1 shred-multipass-v2 ...
+# otherwise fall back to the more conventional propogated environment variables.
+if test -n "$progress"; then progress="$SHRED_PROGRESS"; fi;
+if test -n "$progress" -a "$progress" -gt 0; then {
 	common_extras="$common_extras status=progress";
 }; fi;
 
