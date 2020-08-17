@@ -38,12 +38,12 @@ mkwipedata() {
 	# we're not trying to hide anything, but *destroy* old patterns
 	# (otherwise a zero wipe would be sufficient).
 	path=$(mktemp);
-	dd if=/dev/urandom bs="$bs" count=1 iflag=fullblock of="$path" $common_extras || return $?;
+	dd if=/dev/urandom bs="$bs" count=1 iflag=fullblock of="$path" || return $?;
 	echo "$path";
 }
 runpass() {
 	input=$(mkwipedata);
-	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" oflag=direct of="$device";
+	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" oflag=direct of="$device" $common_extras;
 	rm "$input";
 	maybe_discard "$device";
 }
