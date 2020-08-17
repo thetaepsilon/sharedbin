@@ -17,6 +17,20 @@ if test -n "$common_extras"; then {
 	echo "# picked up common extra options: $common_extras" >&2;
 }; fi;
 
+if test -n "$discard" -a "$discard" -gt 0; then {
+	echo "# enabling discard at the end of each pass." >&2;
+	discard=y;
+}; else {
+	discard="";
+}; fi;
+
+maybe_discard() {
+	if test -n "$discard"; then {
+		echo "# end of pass discard..." >&2;
+		blkdiscard "$1" || echo "# warning: discard $1 failed" >&2;
+	}; fi;
+};
+
 mkwipedata() {
 	# data to wipe only has to be random on a per-block basis.
 	# we're not trying to hide anything, but *destroy* old patterns
