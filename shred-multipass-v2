@@ -45,6 +45,7 @@ runpass() {
 	input=$(mkwipedata);
 	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" oflag=direct of="$device";
 	rm "$input";
+	maybe_discard "$device";
 }
 
 
@@ -63,4 +64,5 @@ for i in $(seq -- "$count"); do {
 }; done;
 echo "Starting zero-fill erase pass...";
 dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device" $common_extras;
+maybe_discard "$device";
 echo "Blank pass completed.";
