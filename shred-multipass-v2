@@ -10,7 +10,7 @@ common_extras="";
 # enable command line in-situ override, e.g. progress=1 shred-multipass-v2 ...
 # otherwise fall back to the more conventional propogated environment variables.
 if test -n "${progress:=}"; then progress="${SHRED_PROGRESS:-}"; fi;
-if test -n "$progress" -a "$progress" -gt 0; then {
+if test -n "$progress" && test "$progress" -gt 0; then {
 	common_extras="$common_extras status=progress";
 }; fi;
 
@@ -19,7 +19,7 @@ if test -n "$common_extras"; then {
 }; fi;
 
 discard="${discard:=}";
-if test -n "$discard" -a "$discard" -gt 0; then {
+if test -n "$discard" && test "$discard" -gt 0; then {
 	echo "# enabling discard at the end of each pass." >&2;
 	discard=y;
 }; else {
