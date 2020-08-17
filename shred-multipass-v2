@@ -24,6 +24,11 @@ if enabled "$progress"; then {
 	common_extras="$common_extras status=progress";
 }; fi;
 
+buffer="${buffer:-}";
+if enabled "$buffer"; then :; else {
+	common_extras="$common_extras oflag=direct";
+}; fi;
+
 if test -n "$common_extras"; then {
 	echo "# picked up common extra options: $common_extras" >&2;
 }; fi;
@@ -53,7 +58,7 @@ mkwipedata() {
 }
 runpass() {
 	input=$(mkwipedata);
-	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" oflag=direct of="$device" $common_extras;
+	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" of="$device" $common_extras;
 	rm "$input";
 	maybe_discard "$device";
 }
@@ -75,7 +80,7 @@ for i in $(seq -- "$count"); do {
 
 if test -z "$discard"; then {
 	echo "Starting zero-fill erase pass...";
-	dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device" $common_extras;
+	dd if=/dev/zero bs="$bs" iflag=fullblock of="$device" $common_extras;
 	echo "Blank pass completed.";
 }; else {
 	echo "# note: skipping blank pass because discard mode is on" >&2;
