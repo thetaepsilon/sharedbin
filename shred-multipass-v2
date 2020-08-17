@@ -56,11 +56,13 @@ mkwipedata() {
 	# we're not trying to hide anything, but *destroy* old patterns
 	# (otherwise a zero wipe would be sufficient).
 	path=$(mktemp);
-	dd if=/dev/urandom bs="$bs" count=1 iflag=fullblock of="$path";
+	echo "# gathering entropy..." >&2;
+	dd if=/dev/urandom bs="$bs" count=1 iflag=fullblock of="$path" status=none;
 	echo "$path";
 }
 runpass() {
 	input=$(mkwipedata);
+	echo "# writing blocks..." >&2;
 	(while cat "$input"; do :; done) | dd iflag=fullblock bs="$bs" of="$device" $common_extras;
 	rm "$input";
 	maybe_discard "$device";
