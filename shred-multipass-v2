@@ -50,7 +50,7 @@ runpass() {
 
 
 
-echo "Device $device will be erased in $count (+ 1) passes using blocksize $bs.";
+echo "Device $device will be erased in $count random passes + blank pass using blocksize $bs.";
 echo "You have 10 seconds to abort the process.";
 sleep 10;
 echo "Starting erasure...";
@@ -62,7 +62,13 @@ for i in $(seq -- "$count"); do {
 		echo "warning: error occured during pass $i" >&2;
 	}; fi;
 }; done;
-echo "Starting zero-fill erase pass...";
-dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device" $common_extras;
-maybe_discard "$device";
-echo "Blank pass completed.";
+
+if test -z "$discard"; then {
+	echo "Starting zero-fill erase pass...";
+	dd if=/dev/zero bs="$bs" iflag=fullblock oflag=direct of="$device" $common_extras;
+	echo "Blank pass completed.";
+}; else {
+	echo "# note: skipping blank pass because discard mode is on" >&2;
+}; fi;
+
+echo "Wipe complete.";
