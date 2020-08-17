@@ -18,7 +18,7 @@ if test -n "$common_extras"; then {
 	echo "# picked up common extra options: $common_extras" >&2;
 }; fi;
 
-discard="${discard:=}";
+discard="${discard:-}";
 if test -n "$discard" && test "$discard" -gt 0; then {
 	echo "# enabling discard at the end of each pass." >&2;
 	discard=y;
